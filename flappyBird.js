@@ -6,9 +6,11 @@ var ctx = cvs.getContext("2d");
 var bird = new Image();
 var bg = new Image();
 var fg = new Image();
+var gmov = new Image();
 var pipeNorth = new Image();
 var pipeSouth = new Image();
 
+gmov.src = "images/gameover.png"
 bird.src = "images/bird.png";
 bg.src = "images/bg.png";
 fg.src = "images/fg.png";
@@ -27,12 +29,15 @@ var bY = 150;
 var gravity = 1.5;
 
 var score = 0;
+var highscore = 0;
 
 // audio files
 
 var fly = new Audio();
 var scor = new Audio();
+var oof = new Audio();
 
+oof.src = "sounds/oof.mp3";
 fly.src = "sounds/fly.mp3";
 scor.src = "sounds/score.mp3";
 
@@ -77,21 +82,37 @@ function draw(){
         }
 
         // detect collision
-        
-        if( bX + bird.width >= pipe[i].x && bX <= pipe[i].x + pipeNorth.width && (bY <= pipe[i].y + pipeNorth.height || bY+bird.height >= pipe[i].y+constant) || bY + bird.height >=  cvs.height - fg.height){
-            location.reload(); // reload the page
+        if( bX + bird.width >= pipe[i].x && bX <= pipe[i].x + pipeNorth.width && (bY <= pipe[i].y + pipeNorth.height || bY+bird.height >= pipe[i].y+constant) || bY + bird.height >= cvs.height - fg.height){
+        	if (score>highscore) {highscore=score;}
+        	fly = 0;
+        	
+        	ctx.drawImage(bg,0,0);
+            ctx.drawImage(fg,0,cvs.height - fg.height);
+            ctx.drawImage(gmov,cvs.width/2 - gmov.width/2,cvs.height/2 - 100);
+            ctx.fillText("Score : "+score,cvs.width/2 - gmov.width/2,cvs.height/2 - 40);
+    		ctx.fillText("Highscore : "+highscore,cvs.width/2 - gmov.width/2,cvs.height/2 - 20);
+    		
+            return;
+
+
         }
+        
+
         
         if(pipe[i].x == 5){
             score++;
             scor.play();
         }
+
+
         
         
     }
 
-    ctx.drawImage(fg,0,cvs.height - fg.height);
     
+
+
+    ctx.drawImage(fg,0,cvs.height - fg.height);
     ctx.drawImage(bird,bX,bY);
     
     bY += gravity;
@@ -99,14 +120,12 @@ function draw(){
     ctx.fillStyle = "#000";
     ctx.font = "20px Verdana";
     ctx.fillText("Score : "+score,10,cvs.height-20);
-    
+    ctx.fillText("Highscore : "+highscore,10,cvs.height-50);
     requestAnimationFrame(draw);
     
 }
 
 draw();
-
-
 
 
 
